@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+
+\usepackage{fontspec}
+\setmainfont[Ligatures=TeX]{Georgia}
+\setsansfont[Ligatures=TeX]{Arial}
+
+\usepackage[]{invoice}
+%\usepackage{hyperref}
+
+\title{Invoice Nr. $invoice-nr$}
+\author{Your Name Here}
+\date{$date$}
+\pagenumbering{gobble}
+\begin{document}
+
+\small
+\noindent
+\textsc{\textbf{Your Name Here}}
+\textbullet{} \textsc{Your Address}
+\textbullet{} \textsc{Also Address}
+\textbullet{} \textsc{And Country}
+
+\normalsize \sffamily
+\vspace{1em}
+\noindent
+Billed company\\
+In some billed street\\
+Somewhere
+
+\vspace{1em}
+
+\begin{flushright}
+  \small
+  Your location, $date$
+\end{flushright}
+
+\vspace{1em}
+
+
+\section*{\textsc{Invoice} \textsc{\#$invoice-nr$}}
+\footnotesize
+
+\noindent
+$invoice$
+
+\vspace{15mm}
+
+\sffamily
+\small
+
+\noindent
+Please transfer the due amount to the following bank account within the next 14 days:
+
+\vspace{1em}
+
+\begin{verbatim}
+    Your Name again
+    Bank: Your Bank
+    IBAN: Your IBAN
+    BIC: Your BIC
+\end{verbatim}
+
+\noindent
+Many thanks in advance, looking forward to further projects!\\
+
+\medskip
+
+\noindent
+Best regards,
+
+\vspace{1em}
+
+\noindent
+Your name again
+\end{document}
