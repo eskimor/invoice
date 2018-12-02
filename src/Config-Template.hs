@@ -4,6 +4,10 @@
 
 module Config where
 
+import           Data.ByteString
+import           Decimal
+import           System.FilePath (FilePath, (</>))
+
 -- | All data is exepected to reside in here.
 --
 --   Executables will chdir into this directory before beginning execution.
