@@ -21,7 +21,7 @@ Now you have the following tools installed in your environment:
   
 # Runtime dependencies
 
-hledger and xelatex should be in path.
+hledger, xelatex and for viewing your invoices evince should be in path.
 
 
 # Warnings
