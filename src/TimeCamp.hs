@@ -1,40 +1,40 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE GADTs #-}
 
 module TimeCamp where
 
-import Control.Monad.IO.Class
-import Data.Aeson
-import Data.Aeson.Lens
-import Data.Default.Class
-import Network.HTTP.Req
-import Data.Text (Text)
-import Control.Lens hiding ((.=))
-import qualified Data.HashMap.Lazy as HMap
-import qualified Data.Map as Map
-import Data.Map (Map)
-import Data.Tuple (swap)
-import Data.Maybe (mapMaybe)
-import           Data.Time
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import Data.Maybe
-import qualified Data.Vector as V
-import Debug.Trace (trace)
+import           Control.Lens           hiding ((.=))
+import           Control.Monad          (when)
+import           Control.Monad.IO.Class
+import           Data.Aeson
+import           Data.Aeson.Lens
 import           Data.Decimal
-import Control.Monad (when)
-import Data.Foldable (traverse_)
-import Data.List (sort)
+import           Data.Default.Class
+import           Data.Foldable          (traverse_)
+import qualified Data.HashMap.Lazy      as HMap
+import           Data.List              (sort)
+import           Data.Map               (Map)
+import qualified Data.Map               as Map
+import           Data.Maybe             (mapMaybe)
+import           Data.Maybe
+import           Data.Text              (Text)
+import qualified Data.Text              as T
+import qualified Data.Text.IO           as T
+import           Data.Time
+import           Data.Tuple             (swap)
+import qualified Data.Vector            as V
+import           Debug.Trace            (trace)
+import           Network.HTTP.Req
 
-import Entry
-import Config
+import           Config
+import           Entry
 
 
 -- | TimeCamp task id.
-import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Char8  as BS
 type TaskId = Text
 
 -- | Id of a TimeCamp entry.
@@ -154,14 +154,14 @@ putEntry ((eId, e), tId) = runReq def $ do
 --
 --   For Post simply provide no `EntryId` (`Nothing`).
 mkPostPutReqBody :: Maybe EntryId -> Entry -> TaskId -> ReqBodyUrlEnc
-mkPostPutReqBody mEid e tId = 
-  ReqBodyUrlEnc $ "date" =: renderDay (entryDate e) 
-  <> "duration" =: (show . (* 3600) . roundTo 2 . entryAmount) e 
-  <> "note" =: prettyPrintDescription e  
+mkPostPutReqBody mEid e tId =
+  ReqBodyUrlEnc $ "date" =: renderDay (entryDate e)
+  <> "duration" =: (show . (* 3600) . roundTo 2 . entryAmount) e
+  <> "note" =: prettyPrintDescription e
   <> "task_id" =: tId
   <> ( maybe mempty ("id" =:)) mEid
-  {- <> "start_time" =: ("08:00:00" :: Text) -}
-  {- <> "end_time" =: undefined -}
+  <> "start_time" =: ("06:00:00" :: Text)
+  <> "end_time" =: ("23:30:00" :: Text)
 
 getTasks :: IO Value
 -- You can either make your monad an instance of 'MonadHttp', or use
