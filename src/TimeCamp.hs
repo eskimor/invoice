@@ -155,13 +155,18 @@ putEntry ((eId, e), tId) = runReq def $ do
 --   For Post simply provide no `EntryId` (`Nothing`).
 mkPostPutReqBody :: Maybe EntryId -> Entry -> TaskId -> ReqBodyUrlEnc
 mkPostPutReqBody mEid e tId =
-  ReqBodyUrlEnc $ "date" =: renderDay (entryDate e)
-  <> "duration" =: (show . (* 3600) . roundTo 2 . entryAmount) e
-  <> "note" =: prettyPrintDescription e
-  <> "task_id" =: tId
-  <> ( maybe mempty ("id" =:)) mEid
-  <> "start_time" =: ("06:00:00" :: Text)
-  <> "end_time" =: ("23:30:00" :: Text)
+    ReqBodyUrlEnc $ "date" =: renderDay (entryDate e)
+    <> "duration" =: (show . (* 3600) . roundTo 2 . entryAmount) e
+    <> "note" =: prettyPrintDescription e
+    <> "task_id" =: tId
+    <> ( maybe mempty ("id" =:)) mEid
+    <> "start_time" =: (renderDayTime startTime)
+    <> "end_time" =: (renderDayTime endTime)
+  where
+    startTime = secondsToDiffTime $ 3600 * 6
+    -- Since recently we really need to provide a valid start _and_ end time to time camp in addition to duration!
+    endTime = startTime + (secondsToDiffTime . round $ 3600 * entryAmount e)
+    renderDayTime = formatTime defaultTimeLocale "%T" . timeToTimeOfDay
 
 getTasks :: IO Value
 -- You can either make your monad an instance of 'MonadHttp', or use
