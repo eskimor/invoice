@@ -9,11 +9,13 @@ import           Data.Map           (Map)
 import qualified Data.Map           as Map
 import           Data.Text          (Text)
 import qualified Data.Text          as T
+import qualified Data.Text.IO       as T
 import           Data.Time
 import           Hledger.Data.Types
 
 import           Entry
 import           Config
+import           AccountingConf
 
 renderInvoice :: Map AccountName [Entry] -> Text
 renderInvoice prjs =
@@ -27,6 +29,25 @@ renderInvoice prjs =
     <> T.unlines (map renderItem (Map.toList prjs))
     <> "\\end{invoice}\n"
 
+sumEntries :: [Entry] -> Decimal
+sumEntries = sum . map entryAmount
+
+writeAccountingBilledEntry :: (Text, Text) -> [Entry] -> AccountingConf -> IO ()
+writeAccountingBilledEntry n es cfg = do
+  let appendAccounting = T.appendFile (_accountingPath cfg) . ("\n" <>)
+  appendAccounting $ makeAccountingBilledEntry n es cfg
+
+makeAccountingBilledEntry :: (Text, Text) -> [Entry] -> AccountingConf -> Text
+makeAccountingBilledEntry (invDate, invNum) es cfg =
+  let
+    s = sumEntries es
+  in
+    T.unlines
+    [ invDate <> "   " <> "Invoice Nr. " <> invNum
+    , "  " <> _accountingIncome cfg <> "  -" <> renderAmount (rate * s) <> " EUR"
+    , "  " <> _accountingClaims cfg
+    ]
+
 renderEntry :: Entry -> Text
 renderEntry entr =
   let
@@ -34,7 +55,7 @@ renderEntry entr =
 
     renderedRate = T.pack . show $ rate
 
-    renderedAmount = T.pack . show . roundTo 2 $ entryAmount entr
+    renderedAmount = renderAmount $ entryAmount entr
 
     renderedDescription = escapeLatexStuff . prettyPrintDescription $ entr
 
@@ -50,4 +71,3 @@ getDateStuff = do
   pure $ ( T.pack $ formatTime defaultTimeLocale "%04Y/%m/%d" (utcToLocalTime z t)
          , T.pack $ formatTime defaultTimeLocale "%04Y-%m-%d" (utcToLocalTime z t)
          )
-

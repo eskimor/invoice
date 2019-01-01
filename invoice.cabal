@@ -45,6 +45,7 @@ library
                      , Config
                      , Invoice
                      , TimeCamp
+                     , AccountingConf
 
 
 executable invoice

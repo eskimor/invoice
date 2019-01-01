@@ -23,6 +23,7 @@ import           System.Directory   (doesFileExist, removeFile, renameFile,
 import           System.Exit        (ExitCode (ExitFailure), exitWith)
 import           System.FilePath    (replaceExtension, takeFileName, (</>))
 import           System.Process     (system)
+import           Data.Foldable
 
 import           Config
 import           Entry
@@ -52,6 +53,12 @@ main = do
   -- Cleanup:
   forM_ ["aux", "log"] $ \ext ->
     removeFile (takeFileName $ replaceExtension invoiceName ext)
+
+  -- Do Accounting:
+  let
+    doAccounting =
+      writeAccountingBilledEntry (today, invoiceNr) (concat . Map.elems $ preparedData)
+  traverse_ doAccounting hledgerAccountingConf
 
   -- TimeCamp:
   doTimeCamp . concat . Map.elems $ preparedData

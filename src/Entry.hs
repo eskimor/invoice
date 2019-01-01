@@ -86,6 +86,9 @@ prepareData = fmap mergeDayEntries . splitProjects . getEntries
 prettyPrintDescription :: Entry -> Text
 prettyPrintDescription  = T.intercalate "; " . nub . entryDescription
 
+renderAmount :: Decimal -> Text
+renderAmount = T.pack . show . roundTo 2
+
 
 -- | Merge entries on a single day into a single "Entry".
 --
